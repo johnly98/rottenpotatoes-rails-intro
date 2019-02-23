@@ -4,10 +4,14 @@
 %table#movies
   %thead
     %tr
-      %th Movie Title
-      %th Rating
-      %th Release Date
-      %th More Info
+      %th{:class => "#{@sort_by == "title"? 'hilite' : ""}"}
+        = link_to 'Movie Title', movies_path(:sort => :by_title), :method => :get
+      %th
+        Rating
+      %th{:class => "#{@sort_by == "date" ? 'hilite' : ""}"}
+        = link_to 'Release Date', movies_path(:sort => :by_date), :method => :get
+      %th 
+        More Info
   %tbody
     - @movies.each do |movie|
       %tr
