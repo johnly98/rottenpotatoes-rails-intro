@@ -11,26 +11,33 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params.key?(:ratings)
-      ratings = params[:ratings].keys
-    else
-      ratings = Movie.get_ratings
-    end
-
-
     @all_ratings = Movie.get_ratings
-    if params.key?(:sort)
+    if params.key?(:ratings) && params.key?(:sort)
+      session[:ratings] = params[:ratings]
+      session[:sort] = params[:sort]
+      ratings = params[:ratings].keys
       if params[:sort] == "by_date"
         @movies = Movie.with_ratings(ratings).order("release_date")
         @sort_by = "date"
-      else
+      elsif params[:sort] == "by_title"
         @movies = Movie.with_ratings(ratings).order("title")
         @sort_by = "title"
+      else 
+        @movies = Movie.with_ratings(ratings)
+        @sort_by = "none"
       end
     else
-      @sort_by = "none"
-      @movies = Movie.with_ratings(ratings)
-
+      if !params.key?(:ratings) && params.key?(:sort)
+        sort = params[:sort]
+        ratings = session[:ratings]
+      elsif params.key?(:ratings) && !params.key?(:sort)
+        sort = session[:sort]
+        ratings = params[:ratings]  
+      else
+        sort = session[:sort]
+        ratings = params[:ratings]
+      end
+      redirect_to movies_path(:sort => sort, :ratings => ratings), :method => :get
     end
   end
 
@@ -41,6 +48,8 @@ class MoviesController < ApplicationController
   def create
     @movie = Movie.create!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully created."
+    session[:ratings] = Hash[Movie.get_ratings.collect { |v| [v, 1] }]
+    session[:sort] = "none"
     redirect_to movies_path
   end
 
