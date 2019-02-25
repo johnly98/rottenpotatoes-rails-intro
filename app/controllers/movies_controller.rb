@@ -34,11 +34,11 @@ class MoviesController < ApplicationController
         sort = session[:sort]
         ratings = params[:ratings]  
       else
-        sort = session[:sort]
-        ratings = params[:ratings]
+        ratings = session[:ratings] = Hash[Movie.get_ratings.collect { |v| [v, 1] }]
+        sort = session[:sort] = "none"
       end
       flash.keep
-      #redirect_to movies_path(:sort => sort, :ratings => ratings), :method => :get
+      redirect_to movies_path(:sort => sort, :ratings => ratings), :method => :get
     end
   end
 
@@ -49,8 +49,6 @@ class MoviesController < ApplicationController
   def create
     @movie = Movie.create!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully created."
-    session[:ratings] = Hash[Movie.get_ratings.collect { |v| [v, 1] }]
-    session[:sort] = "none"
     redirect_to movies_path
   end
 
