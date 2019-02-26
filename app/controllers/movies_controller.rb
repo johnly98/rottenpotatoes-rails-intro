@@ -16,6 +16,7 @@ class MoviesController < ApplicationController
       session[:ratings] = params[:ratings]
       session[:sort] = params[:sort]
       ratings = params[:ratings].keys
+      @checked = ratings
       if params[:sort] == "by_date"
         @movies = Movie.with_ratings(ratings).order("release_date")
         @sort_by = "date"
