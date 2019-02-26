@@ -17,15 +17,16 @@ class MoviesController < ApplicationController
       session[:sort] = params[:sort]
       ratings = params[:ratings].keys
       @checked = ratings
+      @date = ""
+      @title = ""
       if params[:sort] == "by_date"
         @movies = Movie.with_ratings(ratings).order("release_date")
-        @sort_by = "date"
+        @date = "hilite"
       elsif params[:sort] == "by_title"
         @movies = Movie.with_ratings(ratings).order("title")
-        @sort_by = "title"
+        @title = "hilite"
       else 
         @movies = Movie.with_ratings(ratings)
-        @sort_by = "none"
       end
     else
       if !params.key?(:ratings) && params.key?(:sort)
